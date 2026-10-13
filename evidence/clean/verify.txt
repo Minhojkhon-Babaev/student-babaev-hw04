@@ -1,0 +1,10 @@
+ Container hw04-clean-20261013-postgres-1 Running 
+ Container hw04-clean-20261013-clickhouse-1 Running 
+ Container hw04-clean-20261013-clickhouse-1 Waiting 
+ Container hw04-clean-20261013-postgres-1 Waiting 
+ Container hw04-clean-20261013-clickhouse-1 Healthy 
+ Container hw04-clean-20261013-postgres-1 Healthy 
+ Container hw04-clean-20261013-runner-run-d409165ac95e Creating 
+ Container hw04-clean-20261013-runner-run-d409165ac95e Created 
+PASS post_merge: 200232 facts; 8343 daily groups; full source and four SQL variants equal
+PASS dimensions and post-merge control

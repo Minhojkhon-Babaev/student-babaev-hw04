@@ -1,0 +1,62 @@
+[
+  {
+    "profile": "narrow",
+    "variant": "pg",
+    "wall_ms_discarded": 14.629008
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_city",
+    "wall_ms_discarded": 40.567977
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_time",
+    "wall_ms_discarded": 15.253593
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_mv",
+    "wall_ms_discarded": 13.170673
+  },
+  {
+    "profile": "wide",
+    "variant": "pg",
+    "wall_ms_discarded": 73.336296
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_city",
+    "wall_ms_discarded": 24.100625
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_time",
+    "wall_ms_discarded": 21.963175
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_mv",
+    "wall_ms_discarded": 7.020438
+  },
+  {
+    "profile": "time_slice",
+    "variant": "pg",
+    "wall_ms_discarded": 2.221399
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_city",
+    "wall_ms_discarded": 7.694952
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_time",
+    "wall_ms_discarded": 5.453183
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_mv",
+    "wall_ms_discarded": 4.578938
+  }
+]

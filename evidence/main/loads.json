@@ -1,0 +1,32 @@
+[
+  {
+    "batch": "history",
+    "rows": 200148,
+    "pg_copy_wall_ms": 2201.4618110843003,
+    "ch_insert_wall_ms": {
+      "weather_city": 146.834078,
+      "weather_time": 118.997177
+    },
+    "csv_sha256": "d8c9923559373ebc22e9c3062fae1676c1dc1921044b24d9f17b7fdec2086970"
+  },
+  {
+    "batch": "batch_1",
+    "rows": 18,
+    "pg_copy_wall_ms": 2.3224849719554186,
+    "ch_insert_wall_ms": {
+      "weather_city": 5.337017,
+      "weather_time": 1.837975
+    },
+    "csv_sha256": "d6f366fd64eeb1b57e97452dbaba053bc8a13dbdc89f126544efaf4a4a0ff6a4"
+  },
+  {
+    "batch": "batch_2",
+    "rows": 66,
+    "pg_copy_wall_ms": 1.3715538661926985,
+    "ch_insert_wall_ms": {
+      "weather_city": 4.462979,
+      "weather_time": 1.350008
+    },
+    "csv_sha256": "e4dca267d9fbf127c47ad4038071ba7f15613506d0383f53a5dafd9a281100b3"
+  }
+]

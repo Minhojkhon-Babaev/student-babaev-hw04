@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "total_facts": 200232,
+  "daily_groups": 8343,
+  "measured_variants": 12,
+  "timed_executions": 60,
+  "all_values_equal": true
+}

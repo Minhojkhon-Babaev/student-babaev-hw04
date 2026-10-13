@@ -1,0 +1,143 @@
+<!doctype html><html lang='ru'><meta charset='utf-8'><title>Широкий запрос: JOIN и агрегация</title><style>
+    * { box-sizing:border-box } body { margin:0; padding:32px; color:#172431;
+    background:#f0f3f6; font:16px/1.45 system-ui,sans-serif }
+    header,section,footer { background:white; border:1px solid #d6dde5;
+    border-radius:8px; padding:22px; margin-bottom:20px } h1 {font-size:28px;margin:6px 0}
+    h2 {font-size:20px;margin:0 0 14px} p {margin:8px 0} .label {color:#416380;font-size:13px}
+    .grid {display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+    .grid section {min-width:0} pre {background:#f7f9fb;border:1px solid #e0e6ec;
+    padding:15px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace}
+    table {border-collapse:collapse;width:100%;font-size:14px} th,td {border:1px solid #d9e0e7;
+    padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere} th {background:#eaf1f7}
+    .success {color:#166447;font-weight:650}.big {font-size:24px;font-weight:700}
+    code {font-family:ui-monospace,monospace} footer {font-size:12px;color:#536778}
+    </style><body><header><div class='label'>ДЗ 4 · EVIDENCE VIEWER · 13 октября 2026</div><h1>Широкий запрос: JOIN и агрегация</h1><p>Сохранённый вывод выполненного эксперимента. SQL, планы и ответы взяты из файлов evidence; это не имитация интерфейса СУБД.</p></header><div class='grid'><section><h2>PostgreSQL: SQL + EXPLAIN ANALYZE BUFFERS</h2><pre>-- wide: точные целые единицы, среднее округлено до 0.0001 °C.
+WITH grouped AS (
+SELECT d.federal_district, date_trunc(&#x27;month&#x27;, f.observed_at AT TIME ZONE &#x27;UTC&#x27;)::date AS observed_month,
+       count(*) AS observations,
+       count(*) FILTER (WHERE f.is_valid) AS valid_observations,
+       count(f.temp_centi) FILTER (WHERE f.is_valid) AS temp_count,
+       coalesce(sum(f.temp_centi) FILTER (WHERE f.is_valid), 0)::bigint AS temp_sum_centi,
+       count(f.precip_centi) FILTER (WHERE f.is_valid) AS precip_count,
+       coalesce(sum(f.precip_centi) FILTER (WHERE f.is_valid), 0)::bigint AS precip_sum_centi,
+       min(f.temp_centi) FILTER (WHERE f.is_valid) AS min_temp_centi,
+       max(f.temp_centi) FILTER (WHERE f.is_valid) AS max_temp_centi
+FROM weather_hourly AS f
+JOIN dim_city AS d ON f.city_id = d.city_id
+WHERE f.observed_at &gt;= &#x27;2024-01-01&#x27; AND f.observed_at &lt; &#x27;2024-10-01&#x27;
+GROUP BY federal_district, observed_month
+)
+SELECT *,
+       CASE WHEN temp_count = 0 THEN NULL
+            ELSE sign(temp_sum_centi)::bigint *
+                 ((abs(temp_sum_centi) * 100 + temp_count / 2) / temp_count)
+       END AS avg_temp_1e4_c
+FROM grouped
+ORDER BY federal_district, observed_month;
+
+Sort  (cost=16244.85..16345.09 rows=40098 width=81) (actual rows=54 loops=1)
+  Sort Key: grouped.federal_district, grouped.observed_month
+  Sort Method: quicksort  Memory: 31kB
+  Buffers: shared hit=1473
+  -&gt;  Subquery Scan on grouped  (cost=11474.94..13179.11 rows=40098 width=81) (actual rows=54 loops=1)
+        Buffers: shared hit=1473
+        -&gt;  HashAggregate  (cost=11474.94..12176.66 rows=40098 width=73) (actual rows=54 loops=1)
+              Group Key: d.federal_district, (date_trunc(&#x27;month&#x27;::text, (f.observed_at AT TIME ZONE &#x27;UTC&#x27;::text)))::date
+              Batches: 1  Memory Usage: 1569kB
+              Buffers: shared hit=1473
+              -&gt;  Hash Join  (cost=1.68..6546.34 rows=197144 width=28) (actual rows=197280 loops=1)
+                    Hash Cond: (f.city_id = d.city_id)
+                    Buffers: shared hit=1473
+                    -&gt;  Seq Scan on weather_hourly f  (cost=0.00..4475.48 rows=197144 width=22) (actual rows=197280 loops=1)
+                          Filter: ((observed_at &gt;= &#x27;2024-01-01 00:00:00+00&#x27;::timestamp with time zone) AND (observed_at &lt; &#x27;2024-10-01 00:00:00+00&#x27;::timestamp with time zone))
+                          Rows Removed by Filter: 2952
+                          Buffers: shared hit=1472
+                    -&gt;  Hash  (cost=1.30..1.30 rows=30 width=24) (actual rows=30 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                          Buffers: shared hit=1
+                          -&gt;  Seq Scan on dim_city d  (cost=0.00..1.30 rows=30 width=24) (actual rows=30 loops=1)
+                                Buffers: shared hit=1
+Settings: work_mem = &#x27;32MB&#x27;, max_parallel_workers = &#x27;2&#x27;
+Planning:
+  Buffers: shared hit=12
+Planning Time: 0.201 ms
+Execution Time: 76.051 ms
+</pre></section><section><h2>ClickHouse city-first: SQL + EXPLAIN indexes / PIPELINE</h2><pre>-- wide: точные целые единицы, среднее округлено до 0.0001 °C.
+WITH grouped AS (
+SELECT d.federal_district, toStartOfMonth(f.observed_at) AS observed_month,
+       count() AS observations,
+       sum(toUInt64(f.is_valid)) AS valid_observations,
+       countIf(f.is_valid = 1 AND isNotNull(f.temp_centi)) AS temp_count,
+       sumIf(ifNull(toInt64(f.temp_centi), 0), f.is_valid = 1) AS temp_sum_centi,
+       countIf(f.is_valid = 1 AND isNotNull(f.precip_centi)) AS precip_count,
+       sumIf(ifNull(toUInt64(f.precip_centi), 0), f.is_valid = 1) AS precip_sum_centi,
+       min(if(f.is_valid = 1, f.temp_centi, NULL)) AS min_temp_centi,
+       max(if(f.is_valid = 1, f.temp_centi, NULL)) AS max_temp_centi
+FROM weather.weather_city AS f
+JOIN weather.dim_city AS d ON f.city_id = d.city_id
+WHERE f.observed_at &gt;= &#x27;2024-01-01&#x27; AND f.observed_at &lt; &#x27;2024-10-01&#x27;
+GROUP BY federal_district, observed_month
+)
+SELECT *,
+       if(temp_count = 0, NULL,
+          sign(temp_sum_centi) * intDiv(abs(temp_sum_centi) * 100 + intDiv(temp_count, 2),
+                                       greatest(temp_count, 1))) AS avg_temp_1e4_c
+FROM grouped
+ORDER BY federal_district, observed_month;
+
+EXPLAIN indexes = 1
+Expression ((Project names + (Before ORDER BY + (Projection + (Change column names to column identifiers + (Project names + Projection)))) [lifted up part]))
+  Sorting (Sorting for ORDER BY)
+    Expression ((Before ORDER BY + (Projection + (Change column names to column identifiers + (Project names + Projection)))))
+      Aggregating
+        Expression ((Before GROUP BY + ))
+          Join (JOIN FillRightFirst)
+            Expression (( + (JOIN actions + Change column names to column identifiers)))
+              Expression
+                ReadFromMergeTree (weather.weather_city)
+                Indexes:
+                  PrimaryKey
+                    Keys: 
+                      observed_at
+                    Condition: and((observed_at in (-Inf, 1727740799]), (observed_at in [1704067200, +Inf)))
+                    Parts: 2/3
+                    Granules: 25/26
+            Expression ((JOIN actions + Change column names to column identifiers))
+              ReadFromMergeTree (weather.dim_city)
+              Indexes:
+                PrimaryKey
+                  Condition: true
+                  Parts: 1/1
+                  Granules: 1/1
+
+EXPLAIN PIPELINE
+(Expression)
+ExpressionTransform
+  (Sorting)
+  MergingSortedTransform 2 → 1
+    MergeSortingTransform × 2
+      LimitsCheckingTransform × 2
+        PartialSortingTransform × 2
+          (Expression)
+          ExpressionTransform × 2
+            (Aggregating)
+            Resize 2 → 2
+              AggregatingTransform × 2
+                StrictResize 2 → 2
+                  (Expression)
+                  ExpressionTransform × 2
+                    (Join)
+                    JoiningTransform × 2 2 → 1
+                      (Expression)
+                      ExpressionTransform × 2
+                        (Expression)
+                        ExpressionTransform × 2
+                          (ReadFromMergeTree)
+                          MergeTreeSelect(pool: ReadPool, algorithm: Thread) × 2 0 → 1
+                      (Expression)
+                      Resize 1 → 2
+                        FillingRightJoinSide
+                          ExpressionTransform
+                            (ReadFromMergeTree)
+                            MergeTreeSelect(pool: ReadPoolInOrder, algorithm: InOrder) 0 → 1
+</pre></section></div><footer>Источники: main/plans/wide_pg.txt; main/plans/wide_ch_city.txt · Числа не извлечены из скриншотов; исходные артефакты приложены.</footer></body></html>

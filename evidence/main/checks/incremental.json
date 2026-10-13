@@ -1,0 +1,37 @@
+{
+  "historical_rows": 200148,
+  "after_first_batch": [
+    [
+      "moscow",
+      "2024-10-05",
+      6,
+      6,
+      6,
+      6000,
+      6,
+      150,
+      1000,
+      1000,
+      100000
+    ]
+  ],
+  "after_second_batch": [
+    [
+      "moscow",
+      "2024-10-05",
+      24,
+      24,
+      24,
+      60000,
+      24,
+      1500,
+      1000,
+      3000,
+      250000
+    ]
+  ],
+  "physical_rows_before_merges": 8345,
+  "logical_groups_before_merges": 8343,
+  "backfill_once_before_incoming_batches": true,
+  "late_arrivals_update_existing_day": true
+}

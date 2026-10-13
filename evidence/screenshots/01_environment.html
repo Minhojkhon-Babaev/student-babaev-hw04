@@ -1,0 +1,23 @@
+<!doctype html><html lang='ru'><meta charset='utf-8'><title>Работающее изолированное окружение</title><style>
+    * { box-sizing:border-box } body { margin:0; padding:32px; color:#172431;
+    background:#f0f3f6; font:16px/1.45 system-ui,sans-serif }
+    header,section,footer { background:white; border:1px solid #d6dde5;
+    border-radius:8px; padding:22px; margin-bottom:20px } h1 {font-size:28px;margin:6px 0}
+    h2 {font-size:20px;margin:0 0 14px} p {margin:8px 0} .label {color:#416380;font-size:13px}
+    .grid {display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+    .grid section {min-width:0} pre {background:#f7f9fb;border:1px solid #e0e6ec;
+    padding:15px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace}
+    table {border-collapse:collapse;width:100%;font-size:14px} th,td {border:1px solid #d9e0e7;
+    padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere} th {background:#eaf1f7}
+    .success {color:#166447;font-weight:650}.big {font-size:24px;font-weight:700}
+    code {font-family:ui-monospace,monospace} footer {font-size:12px;color:#536778}
+    </style><body><header><div class='label'>ДЗ 4 · EVIDENCE VIEWER · 13 октября 2026</div><h1>Работающее изолированное окружение</h1><p>Сохранённый вывод выполненного эксперимента. SQL, планы и ответы взяты из файлов evidence; это не имитация интерфейса СУБД.</p></header><section><h2>docker compose ps</h2><pre>NAME                          IMAGE                                                                                                       COMMAND                  SERVICE      CREATED          STATUS                    PORTS
+hw04-chweather-clickhouse-1   clickhouse/clickhouse-server:24.8@sha256:1ffa82edee000a42c09313bd9f1293d94c570aee74babc1b3ca9983a35fa597b   &quot;/entrypoint.sh&quot;         clickhouse   10 minutes ago   Up 10 minutes (healthy)   8123/tcp, 9000/tcp, 9009/tcp
+hw04-chweather-postgres-1     postgres:16.4-bookworm@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412              &quot;docker-entrypoint.s…&quot;   postgres     10 minutes ago   Up 10 minutes (healthy)   5432/tcp</pre></section><section><h2>Версии и ресурсы</h2><table><tr><th>Параметр</th><th>Фактический вывод</th></tr><tr><td>ОС хоста</td><td>ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246</td></tr><tr><td>Архитектура</td><td>arm64</td></tr><tr><td>Docker Engine / Compose</td><td>29.5.2 / Docker Compose version 5.5.1</td></tr><tr><td>VM</td><td>CPUs=6 memory_bytes=12513603584 architecture=aarch64</td></tr><tr><td>PostgreSQL</td><td>PostgreSQL 16.4 (Debian 16.4-1.pgdg120+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit</td></tr><tr><td>ClickHouse</td><td>24.8.14.39</td></tr><tr><td>Python</td><td>3.12.14</td></tr><tr><td>Лимиты контейнеров</td><td>/hw04-chweather-postgres-1 NanoCPUs=2000000000 Memory=2147483648
+/hw04-chweather-clickhouse-1 NanoCPUs=2000000000 Memory=2147483648</td></tr></table></section><div class='grid'><section><h2>PostgreSQL — выполненный SELECT</h2><pre>SELECT count(*) AS observations,
+       count(DISTINCT (city_id, observed_at)) AS unique_business_keys
+FROM weather_hourly;</pre><table><tr><th>observations</th><th>unique_business_keys</th></tr><tr><td>200232</td><td>200232</td></tr></table></section><section><h2>ClickHouse — выполненный SELECT</h2><pre>SELECT count() AS observations,
+       uniqExact(tuple(city_id, observed_at)) AS unique_business_keys
+FROM weather.weather_city;</pre><table><tr><th>observations</th><th>unique_business_keys</th></tr><tr><td>200232</td><td>200232</td></tr></table></section></div><footer>Источники: main/host.json; main/environment.json; main/live_queries.json · Числа не извлечены из скриншотов; исходные артефакты приложены.</footer></body></html>

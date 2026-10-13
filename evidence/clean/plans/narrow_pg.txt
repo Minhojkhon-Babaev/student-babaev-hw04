@@ -1,0 +1,40 @@
+-- narrow: точные целые единицы, среднее округлено до 0.0001 °C.
+WITH grouped AS (
+SELECT f.city_id, (f.observed_at AT TIME ZONE 'UTC')::date AS observed_date,
+       count(*) AS observations,
+       count(*) FILTER (WHERE f.is_valid) AS valid_observations,
+       count(f.temp_centi) FILTER (WHERE f.is_valid) AS temp_count,
+       coalesce(sum(f.temp_centi) FILTER (WHERE f.is_valid), 0)::bigint AS temp_sum_centi,
+       count(f.precip_centi) FILTER (WHERE f.is_valid) AS precip_count,
+       coalesce(sum(f.precip_centi) FILTER (WHERE f.is_valid), 0)::bigint AS precip_sum_centi,
+       min(f.temp_centi) FILTER (WHERE f.is_valid) AS min_temp_centi,
+       max(f.temp_centi) FILTER (WHERE f.is_valid) AS max_temp_centi
+FROM weather_hourly AS f
+WHERE f.city_id = 'moscow' AND f.observed_at >= '2024-06-01' AND f.observed_at < '2024-07-01'
+GROUP BY city_id, observed_date
+)
+SELECT *,
+       CASE WHEN temp_count = 0 THEN NULL
+            ELSE sign(temp_sum_centi)::bigint *
+                 ((abs(temp_sum_centi) * 100 + temp_count / 2) / temp_count)
+       END AS avg_temp_1e4_c
+FROM grouped
+ORDER BY city_id, observed_date;
+
+Sort  (cost=126.06..127.74 rows=671 width=71) (actual rows=30 loops=1)
+  Sort Key: grouped.city_id, grouped.observed_date
+  Sort Method: quicksort  Memory: 28kB
+  Buffers: shared hit=12
+  ->  Subquery Scan on grouped  (cost=67.72..94.56 rows=671 width=71) (actual rows=30 loops=1)
+        Buffers: shared hit=12
+        ->  HashAggregate  (cost=67.72..77.79 rows=671 width=63) (actual rows=30 loops=1)
+              Group Key: ((f.observed_at AT TIME ZONE 'UTC'::text))::date
+              Batches: 1  Memory Usage: 49kB
+              Buffers: shared hit=12
+              ->  Index Only Scan using weather_city_time_cover on weather_hourly f  (cost=0.42..51.84 rows=706 width=18) (actual rows=720 loops=1)
+                    Index Cond: ((city_id = 'moscow'::text) AND (observed_at >= '2024-06-01 00:00:00+00'::timestamp with time zone) AND (observed_at < '2024-07-01 00:00:00+00'::timestamp with time zone))
+                    Heap Fetches: 0
+                    Buffers: shared hit=12
+Settings: work_mem = '32MB', max_parallel_workers = '2'
+Planning Time: 0.260 ms
+Execution Time: 0.291 ms

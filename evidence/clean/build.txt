@@ -1,0 +1,19 @@
+time="2026-10-13T17:33:52+03:00" level=warning msg="buildx Docker CLI plugin not found: falling back to the classic builder. BuildKit-only build features (multi-arch, secrets, ssh, additional contexts, ...) will not be available"
+ Image hw04-clean-20261013-runner Building 
+ Image hw04-clean-20261013-runner Building 
+Sending build context to Docker daemon   19.2kB
+Step 1/4 : FROM python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea
+ ---> 78387bc3881b
+Step 2/4 : RUN pip install --no-cache-dir psycopg2-binary==2.9.10
+ ---> Using cache
+ ---> fb0a7dd69e13
+Step 3/4 : WORKDIR /workspace
+ ---> Using cache
+ ---> 7517cdc71b6e
+Step 4/4 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 3b0ad2687fef
+Successfully built 3b0ad2687fef
+Successfully tagged hw04-clean-20261013-runner:latest
+ Image hw04-clean-20261013-runner Built 
+ Image hw04-clean-20261013-runner Built 

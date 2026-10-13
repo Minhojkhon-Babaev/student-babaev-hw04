@@ -1,0 +1,26 @@
+<!doctype html><html lang='ru'><meta charset='utf-8'><title>Повторная доставка и граница гарантий</title><style>
+    * { box-sizing:border-box } body { margin:0; padding:32px; color:#172431;
+    background:#f0f3f6; font:16px/1.45 system-ui,sans-serif }
+    header,section,footer { background:white; border:1px solid #d6dde5;
+    border-radius:8px; padding:22px; margin-bottom:20px } h1 {font-size:28px;margin:6px 0}
+    h2 {font-size:20px;margin:0 0 14px} p {margin:8px 0} .label {color:#416380;font-size:13px}
+    .grid {display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+    .grid section {min-width:0} pre {background:#f7f9fb;border:1px solid #e0e6ec;
+    padding:15px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace}
+    table {border-collapse:collapse;width:100%;font-size:14px} th,td {border:1px solid #d9e0e7;
+    padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere} th {background:#eaf1f7}
+    .success {color:#166447;font-weight:650}.big {font-size:24px;font-weight:700}
+    code {font-family:ui-monospace,monospace} footer {font-size:12px;color:#536778}
+    </style><body><header><div class='label'>ДЗ 4 · EVIDENCE VIEWER · 13 октября 2026</div><h1>Повторная доставка и граница гарантий</h1><p>Сохранённый вывод выполненного эксперимента. SQL, планы и ответы взяты из файлов evidence; это не имитация интерфейса СУБД.</p></header><section><h2>Отдельные таблицы weather_replay / daily_replay</h2><pre>INSERT INTO weather.weather_replay SELECT * FROM weather.weather_city
+        WHERE city_id = &#x27;moscow&#x27; AND toDate(observed_at) = &#x27;2024-10-05&#x27;;
+
+INSERT INTO weather.weather_replay SELECT * FROM weather.weather_city
+        WHERE city_id = &#x27;moscow&#x27; AND toDate(observed_at) = &#x27;2024-10-05&#x27; AND toHour(observed_at) &lt; 6;
+
+SELECT sum(observations) AS observations, sum(temp_count) AS temp_count,
+        sum(temp_sum_centi) AS temp_sum_centi, sum(precip_sum_centi) AS precip_sum_centi
+        FROM weather.daily_replay;</pre></section><section><h2>Фактический результат</h2><table><tr><th>Этап</th><th>observations</th><th>temp_sum_centi</th><th>precip_sum_centi</th><th>Средняя, °C</th></tr><tr><td>Исходные 24 часа</td><td>24</td><td>60000</td><td>1500</td><td>25.0000</td></tr><tr><td>Повторно доставлены 6 часов</td><td>30</td><td>66000</td><td>1650</td><td>22.0000</td></tr></table><p>Повторяющихся бизнес-ключей: <b>6</b>. Обычный MergeTree и MV прибавляют доставленные строки повторно.</p></section><section><h2>PostgreSQL защищён PK; основной опыт сохранён</h2><pre>INSERT INTO weather_hourly SELECT * FROM weather_hourly
+WHERE city_id = &#x27;moscow&#x27; ORDER BY observed_at LIMIT 1;
+
+SQLSTATE 23505 (UniqueViolation)
+PG count before=200232; after=200232</pre></section><footer>Источники: main/checks/replay.json; scripts/run.py:repeat_experiment · Числа не извлечены из скриншотов; исходные артефакты приложены.</footer></body></html>

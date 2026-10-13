@@ -1,0 +1,58 @@
+-- narrow: точные целые единицы, среднее округлено до 0.0001 °C.
+WITH grouped AS (
+SELECT f.city_id, f.observed_date AS observed_date,
+       sum(f.observations) AS observations,
+       sum(f.valid_observations) AS valid_observations,
+       sum(f.temp_count) AS temp_count,
+       sum(f.temp_sum_centi) AS temp_sum_centi,
+       sum(f.precip_count) AS precip_count,
+       sum(f.precip_sum_centi) AS precip_sum_centi,
+       min(f.min_temp_centi) AS min_temp_centi,
+       max(f.max_temp_centi) AS max_temp_centi
+FROM weather.weather_daily AS f
+WHERE f.city_id = 'moscow' AND f.observed_date >= '2024-06-01' AND f.observed_date < '2024-07-01'
+GROUP BY city_id, observed_date
+)
+SELECT *,
+       if(temp_count = 0, NULL,
+          sign(temp_sum_centi) * intDiv(abs(temp_sum_centi) * 100 + intDiv(temp_count, 2),
+                                       greatest(temp_count, 1))) AS avg_temp_1e4_c
+FROM grouped
+ORDER BY city_id, observed_date;
+
+EXPLAIN indexes = 1
+Expression ((Project names + (Before ORDER BY + (Projection + (Change column names to column identifiers + (Project names + Projection)))) [lifted up part]))
+  Sorting (Sorting for ORDER BY)
+    Expression ((Before ORDER BY + (Projection + (Change column names to column identifiers + (Project names + Projection)))))
+      Aggregating
+        Expression (Before GROUP BY)
+          Expression
+            ReadFromMergeTree (weather.weather_daily)
+            Indexes:
+              PrimaryKey
+                Keys: 
+                  city_id
+                  observed_date
+                Condition: and((observed_date in (-Inf, 19904]), and((observed_date in [19875, +Inf)), (city_id in ['moscow', 'moscow'])))
+                Parts: 1/3
+                Granules: 1/3
+
+EXPLAIN PIPELINE
+(Expression)
+ExpressionTransform
+  (Sorting)
+  MergingSortedTransform 2 → 1
+    MergeSortingTransform × 2
+      LimitsCheckingTransform × 2
+        PartialSortingTransform × 2
+          (Expression)
+          ExpressionTransform × 2
+            (Aggregating)
+            Resize 1 → 2
+              AggregatingTransform
+                (Expression)
+                ExpressionTransform
+                  (Expression)
+                  ExpressionTransform
+                    (ReadFromMergeTree)
+                    MergeTreeSelect(pool: ReadPoolInOrder, algorithm: InOrder) 0 → 1

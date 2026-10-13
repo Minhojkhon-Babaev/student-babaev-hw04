@@ -1,0 +1,15 @@
+ Container hw04-clean-20261013-postgres-1 Running 
+ Container hw04-clean-20261013-clickhouse-1 Running 
+ Container hw04-clean-20261013-postgres-1 Waiting 
+ Container hw04-clean-20261013-clickhouse-1 Waiting 
+ Container hw04-clean-20261013-postgres-1 Healthy 
+ Container hw04-clean-20261013-clickhouse-1 Healthy 
+ Container hw04-clean-20261013-runner-run-77d88481936c Creating 
+ Container hw04-clean-20261013-runner-run-77d88481936c Created 
+PASS history: 200148 facts; 8340 daily groups; full source and four SQL variants equal
+PASS after_batch_1: 200166 facts; 8341 daily groups; full source and four SQL variants equal
+PASS after_batch_2: 200232 facts; 8343 daily groups; full source and four SQL variants equal
+Measured narrow: warmup + 5 repeats for each of four variants
+Measured wide: warmup + 5 repeats for each of four variants
+Measured time_slice: warmup + 5 repeats for each of four variants
+PASS complete: evidence saved to evidence/clean

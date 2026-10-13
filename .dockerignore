@@ -1,0 +1,6 @@
+.git
+data/generated
+evidence
+__pycache__
+**/__pycache__
+*.zip

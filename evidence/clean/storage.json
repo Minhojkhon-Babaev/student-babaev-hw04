@@ -1,0 +1,52 @@
+{
+  "pg_weather_heap_bytes": 12058624,
+  "pg_weather_index_bytes": 32964608,
+  "pg_weather_total_bytes": 45064192,
+  "ch_columns": [
+    "table",
+    "physical_rows",
+    "active_parts",
+    "bytes_on_disk",
+    "compressed_bytes",
+    "uncompressed_bytes",
+    "marks"
+  ],
+  "ch_parts": [
+    [
+      "dim_city",
+      30,
+      1,
+      763,
+      489,
+      910,
+      2
+    ],
+    [
+      "weather_city",
+      200232,
+      3,
+      1187901,
+      1186140,
+      2404424,
+      29
+    ],
+    [
+      "weather_daily",
+      8345,
+      3,
+      134808,
+      132734,
+      476002,
+      6
+    ],
+    [
+      "weather_time",
+      200232,
+      3,
+      588514,
+      586846,
+      2409094,
+      29
+    ]
+  ]
+}

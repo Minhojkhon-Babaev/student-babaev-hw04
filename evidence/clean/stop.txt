@@ -1,0 +1,13 @@
+$ docker compose -p hw04-clean-20261013 stop
+ Container hw04-clean-20261013-clickhouse-1 Stopping 
+ Container hw04-clean-20261013-postgres-1 Stopping 
+ Container hw04-clean-20261013-postgres-1 Stopped 
+ Container hw04-clean-20261013-clickhouse-1 Stopped 
+
+NAME                               IMAGE                                                                                                       COMMAND                  SERVICE      CREATED         STATUS                              PORTS
+hw04-clean-20261013-clickhouse-1   clickhouse/clickhouse-server:24.8@sha256:1ffa82edee000a42c09313bd9f1293d94c570aee74babc1b3ca9983a35fa597b   "/entrypoint.sh"         clickhouse   8 minutes ago   Exited (0) Less than a second ago   
+hw04-clean-20261013-postgres-1     postgres:16.4-bookworm@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412              "docker-entrypoint.s…"   postgres     8 minutes ago   Exited (0) 2 seconds ago            
+
+Named volumes before and after stop are identical:
+hw04-clean-20261013_ch_data
+hw04-clean-20261013_pg_data

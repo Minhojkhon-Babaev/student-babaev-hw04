@@ -1,0 +1,23 @@
+{
+  "seed": 20261013,
+  "days": 278,
+  "cities": 30,
+  "start_utc": "2024-01-01T00:00:00+00:00",
+  "increment_day": "2024-10-05",
+  "batches": {
+    "history": {
+      "rows": 200148,
+      "csv_sha256": "d8c9923559373ebc22e9c3062fae1676c1dc1921044b24d9f17b7fdec2086970"
+    },
+    "batch_1": {
+      "rows": 18,
+      "csv_sha256": "d6f366fd64eeb1b57e97452dbaba053bc8a13dbdc89f126544efaf4a4a0ff6a4"
+    },
+    "batch_2": {
+      "rows": 66,
+      "csv_sha256": "e4dca267d9fbf127c47ad4038071ba7f15613506d0383f53a5dafd9a281100b3"
+    }
+  },
+  "total_rows": 200232,
+  "synthetic": true
+}

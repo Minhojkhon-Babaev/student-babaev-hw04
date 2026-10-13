@@ -1,0 +1,9 @@
+{
+  "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t26.4\nBuildVersion:\t\t25E246",
+  "host_architecture": "arm64",
+  "docker_server": "29.5.2",
+  "compose": "Docker Compose version 5.5.1",
+  "docker_vm_resources": "CPUs=6 memory_bytes=12513603584 architecture=aarch64",
+  "compose_ps": "NAME                          IMAGE                                                                                                       COMMAND                  SERVICE      CREATED          STATUS                    PORTS\nhw04-chweather-clickhouse-1   clickhouse/clickhouse-server:24.8@sha256:1ffa82edee000a42c09313bd9f1293d94c570aee74babc1b3ca9983a35fa597b   \"/entrypoint.sh\"         clickhouse   10 minutes ago   Up 10 minutes (healthy)   8123/tcp, 9000/tcp, 9009/tcp\nhw04-chweather-postgres-1     postgres:16.4-bookworm@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412              \"docker-entrypoint.s…\"   postgres     10 minutes ago   Up 10 minutes (healthy)   5432/tcp",
+  "container_limits": "/hw04-chweather-postgres-1 NanoCPUs=2000000000 Memory=2147483648\n/hw04-chweather-clickhouse-1 NanoCPUs=2000000000 Memory=2147483648"
+}

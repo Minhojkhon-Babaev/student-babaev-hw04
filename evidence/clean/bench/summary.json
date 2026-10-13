@@ -1,0 +1,332 @@
+[
+  {
+    "profile": "narrow",
+    "variant": "pg",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 0.7134,
+      "median": 0.857788,
+      "max": 1.26529
+    },
+    "server_ms": {
+      "min": 0.187,
+      "median": 0.203,
+      "max": 0.229
+    },
+    "read_rows": {
+      "min": 720,
+      "median": 720,
+      "max": 720
+    }
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_city",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.973835,
+      "median": 5.549064,
+      "max": 5.771686
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 4,
+      "max": 4
+    },
+    "read_rows": {
+      "min": 8192,
+      "median": 8192,
+      "max": 8192
+    },
+    "read_bytes": {
+      "min": 98304,
+      "median": 98304,
+      "max": 98304
+    },
+    "statistics_elapsed_ms": {
+      "min": 2.963619,
+      "median": 4.204831,
+      "max": 4.602002
+    }
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_time",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.998913,
+      "median": 5.464997,
+      "max": 6.194644
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 4,
+      "max": 4
+    },
+    "read_rows": {
+      "min": 24576,
+      "median": 24576,
+      "max": 24576
+    },
+    "read_bytes": {
+      "min": 294912,
+      "median": 294912,
+      "max": 294912
+    },
+    "statistics_elapsed_ms": {
+      "min": 3.1053819999999996,
+      "median": 3.888394,
+      "max": 4.407374000000001
+    }
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_mv",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 4.576007,
+      "median": 5.438543,
+      "max": 5.802346
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 4,
+      "max": 4
+    },
+    "read_rows": {
+      "min": 8340,
+      "median": 8340,
+      "max": 8340
+    },
+    "read_bytes": {
+      "min": 475380,
+      "median": 475380,
+      "max": 475380
+    },
+    "statistics_elapsed_ms": {
+      "min": 3.468852,
+      "median": 4.160381,
+      "max": 4.648326
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "pg",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 62.066911,
+      "median": 67.627722,
+      "max": 70.607389
+    },
+    "server_ms": {
+      "min": 63.23,
+      "median": 66.487,
+      "max": 75.032
+    },
+    "read_rows": {
+      "min": 200232,
+      "median": 200232,
+      "max": 200232
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_city",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 16.697972,
+      "median": 18.783449,
+      "max": 20.199796
+    },
+    "server_ms": {
+      "min": 15,
+      "median": 17,
+      "max": 19
+    },
+    "read_rows": {
+      "min": 200244,
+      "median": 200244,
+      "max": 200244
+    },
+    "read_bytes": {
+      "min": 2402520,
+      "median": 2402520,
+      "max": 2402520
+    },
+    "statistics_elapsed_ms": {
+      "min": 15.553575,
+      "median": 17.312945,
+      "max": 18.735208
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_time",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 17.786005,
+      "median": 20.336832,
+      "max": 21.842684
+    },
+    "server_ms": {
+      "min": 16,
+      "median": 19,
+      "max": 20
+    },
+    "read_rows": {
+      "min": 200178,
+      "median": 200178,
+      "max": 200178
+    },
+    "read_bytes": {
+      "min": 2402256,
+      "median": 2402256,
+      "max": 2402256
+    },
+    "statistics_elapsed_ms": {
+      "min": 16.584661,
+      "median": 18.932503,
+      "max": 20.449748
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_mv",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 4.457988,
+      "median": 5.182236,
+      "max": 5.33069
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 4,
+      "max": 4
+    },
+    "read_rows": {
+      "min": 8373,
+      "median": 8373,
+      "max": 8373
+    },
+    "read_bytes": {
+      "min": 475866,
+      "median": 475866,
+      "max": 475866
+    },
+    "statistics_elapsed_ms": {
+      "min": 3.474768,
+      "median": 4.090187,
+      "max": 4.17385
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "pg",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 1.50683,
+      "median": 1.589939,
+      "max": 1.65051
+    },
+    "server_ms": {
+      "min": 0.976,
+      "median": 1.046,
+      "max": 1.081
+    },
+    "read_rows": {
+      "min": 2160,
+      "median": 2160,
+      "max": 2160
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_city",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 5.261178,
+      "median": 6.09864,
+      "max": 7.685288
+    },
+    "server_ms": {
+      "min": 4,
+      "median": 5,
+      "max": 6
+    },
+    "read_rows": {
+      "min": 200214,
+      "median": 200214,
+      "max": 200214
+    },
+    "read_bytes": {
+      "min": 2402040,
+      "median": 2402040,
+      "max": 2402040
+    },
+    "statistics_elapsed_ms": {
+      "min": 4.128566999999999,
+      "median": 4.842927,
+      "max": 6.458653
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_time",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.384379,
+      "median": 4.074119,
+      "max": 4.732574
+    },
+    "server_ms": {
+      "min": 2,
+      "median": 3,
+      "max": 3
+    },
+    "read_rows": {
+      "min": 8192,
+      "median": 8192,
+      "max": 8192
+    },
+    "read_bytes": {
+      "min": 98304,
+      "median": 98304,
+      "max": 98304
+    },
+    "statistics_elapsed_ms": {
+      "min": 2.640609,
+      "median": 3.180336,
+      "max": 3.533433
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_mv",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.509896,
+      "median": 4.556484,
+      "max": 4.967611
+    },
+    "server_ms": {
+      "min": 2,
+      "median": 3,
+      "max": 3
+    },
+    "read_rows": {
+      "min": 8343,
+      "median": 8343,
+      "max": 8343
+    },
+    "read_bytes": {
+      "min": 475386,
+      "median": 475386,
+      "max": 475386
+    },
+    "statistics_elapsed_ms": {
+      "min": 2.647898,
+      "median": 3.162506,
+      "max": 3.651535
+    }
+  }
+]

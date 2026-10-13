@@ -1,0 +1,161 @@
+{
+  "stage": "history",
+  "transfer": {
+    "source_rows": 200148,
+    "source_sha256": "7b202533ecf3936dd5bf0ae1bc97690747c02d5f180e3077b978d25819f57907",
+    "unique_business_key": true,
+    "pg": {
+      "rows": 200148,
+      "sha256": "7b202533ecf3936dd5bf0ae1bc97690747c02d5f180e3077b978d25819f57907",
+      "equal_all_fields": true
+    },
+    "ch_city": {
+      "rows": 200148,
+      "sha256": "7b202533ecf3936dd5bf0ae1bc97690747c02d5f180e3077b978d25819f57907",
+      "equal_all_fields": true
+    },
+    "ch_time": {
+      "rows": 200148,
+      "sha256": "7b202533ecf3936dd5bf0ae1bc97690747c02d5f180e3077b978d25819f57907",
+      "equal_all_fields": true
+    }
+  },
+  "comparisons": {
+    "daily": {
+      "source": {
+        "rows": 8340,
+        "sha256": "2a713f23a3c1843775fd6b50580b2ffeb570b4eea39dc2f2d54c253872331dde"
+      },
+      "pg": {
+        "rows": 8340,
+        "sha256": "2a713f23a3c1843775fd6b50580b2ffeb570b4eea39dc2f2d54c253872331dde",
+        "equal_all_keys_metrics": true
+      },
+      "ch_city": {
+        "rows": 8340,
+        "sha256": "2a713f23a3c1843775fd6b50580b2ffeb570b4eea39dc2f2d54c253872331dde",
+        "equal_all_keys_metrics": true
+      },
+      "ch_time": {
+        "rows": 8340,
+        "sha256": "2a713f23a3c1843775fd6b50580b2ffeb570b4eea39dc2f2d54c253872331dde",
+        "equal_all_keys_metrics": true
+      },
+      "ch_mv": {
+        "rows": 8340,
+        "sha256": "2a713f23a3c1843775fd6b50580b2ffeb570b4eea39dc2f2d54c253872331dde",
+        "equal_all_keys_metrics": true
+      }
+    },
+    "narrow": {
+      "source": {
+        "rows": 30,
+        "sha256": "4362689dd8b3ef02dcc2cb4a004fb52413d3edb817d94866e7b0f7a53d3b631f"
+      },
+      "pg": {
+        "rows": 30,
+        "sha256": "4362689dd8b3ef02dcc2cb4a004fb52413d3edb817d94866e7b0f7a53d3b631f",
+        "equal_all_keys_metrics": true
+      },
+      "ch_city": {
+        "rows": 30,
+        "sha256": "4362689dd8b3ef02dcc2cb4a004fb52413d3edb817d94866e7b0f7a53d3b631f",
+        "equal_all_keys_metrics": true
+      },
+      "ch_time": {
+        "rows": 30,
+        "sha256": "4362689dd8b3ef02dcc2cb4a004fb52413d3edb817d94866e7b0f7a53d3b631f",
+        "equal_all_keys_metrics": true
+      },
+      "ch_mv": {
+        "rows": 30,
+        "sha256": "4362689dd8b3ef02dcc2cb4a004fb52413d3edb817d94866e7b0f7a53d3b631f",
+        "equal_all_keys_metrics": true
+      }
+    },
+    "wide": {
+      "source": {
+        "rows": 54,
+        "sha256": "281e70c0f0c756887f7325a5c64b540f3e7d37038b3d677e86dc7bf2db98a42b"
+      },
+      "pg": {
+        "rows": 54,
+        "sha256": "281e70c0f0c756887f7325a5c64b540f3e7d37038b3d677e86dc7bf2db98a42b",
+        "equal_all_keys_metrics": true
+      },
+      "ch_city": {
+        "rows": 54,
+        "sha256": "281e70c0f0c756887f7325a5c64b540f3e7d37038b3d677e86dc7bf2db98a42b",
+        "equal_all_keys_metrics": true
+      },
+      "ch_time": {
+        "rows": 54,
+        "sha256": "281e70c0f0c756887f7325a5c64b540f3e7d37038b3d677e86dc7bf2db98a42b",
+        "equal_all_keys_metrics": true
+      },
+      "ch_mv": {
+        "rows": 54,
+        "sha256": "281e70c0f0c756887f7325a5c64b540f3e7d37038b3d677e86dc7bf2db98a42b",
+        "equal_all_keys_metrics": true
+      }
+    },
+    "time_slice": {
+      "source": {
+        "rows": 90,
+        "sha256": "a67d03eee8fe6618b1d3dfb5b4195ef19eeb4eec6e519f47cb98802fb8a49f01"
+      },
+      "pg": {
+        "rows": 90,
+        "sha256": "a67d03eee8fe6618b1d3dfb5b4195ef19eeb4eec6e519f47cb98802fb8a49f01",
+        "equal_all_keys_metrics": true
+      },
+      "ch_city": {
+        "rows": 90,
+        "sha256": "a67d03eee8fe6618b1d3dfb5b4195ef19eeb4eec6e519f47cb98802fb8a49f01",
+        "equal_all_keys_metrics": true
+      },
+      "ch_time": {
+        "rows": 90,
+        "sha256": "a67d03eee8fe6618b1d3dfb5b4195ef19eeb4eec6e519f47cb98802fb8a49f01",
+        "equal_all_keys_metrics": true
+      },
+      "ch_mv": {
+        "rows": 90,
+        "sha256": "a67d03eee8fe6618b1d3dfb5b4195ef19eeb4eec6e519f47cb98802fb8a49f01",
+        "equal_all_keys_metrics": true
+      }
+    }
+  },
+  "physical_daily_rows": 8340,
+  "logical_daily_rows": 8340,
+  "increment_moscow": [],
+  "null_or_invalid_only_days": [
+    [
+      "syn_26",
+      "2024-01-02",
+      24,
+      0,
+      0,
+      0,
+      0,
+      0,
+      null,
+      null,
+      null
+    ],
+    [
+      "syn_27",
+      "2024-01-01",
+      24,
+      24,
+      0,
+      0,
+      24,
+      476,
+      null,
+      null,
+      null
+    ]
+  ],
+  "all_checks_passed": true
+}

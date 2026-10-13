@@ -1,0 +1,30 @@
+{
+  "isolation": "Only weather_replay and daily_replay; main tables unchanged",
+  "pg_duplicate_sqlstate": "23505",
+  "pg_rows_before": 200232,
+  "pg_rows_after": 200232,
+  "sql_initial": "INSERT INTO weather.weather_replay SELECT * FROM weather.weather_city\n        WHERE city_id = 'moscow' AND toDate(observed_at) = '2024-10-05'",
+  "sql_repeated": "INSERT INTO weather.weather_replay SELECT * FROM weather.weather_city\n        WHERE city_id = 'moscow' AND toDate(observed_at) = '2024-10-05' AND toHour(observed_at) < 6",
+  "sql_check": "SELECT sum(observations) AS observations, sum(temp_count) AS temp_count,\n        sum(temp_sum_centi) AS temp_sum_centi, sum(precip_sum_centi) AS precip_sum_centi\n        FROM weather.daily_replay",
+  "before": {
+    "observations": 24,
+    "temp_count": 24,
+    "temp_sum_centi": 60000,
+    "precip_sum_centi": 1500
+  },
+  "after": {
+    "observations": 30,
+    "temp_count": 30,
+    "temp_sum_centi": 66000,
+    "precip_sum_centi": 1650
+  },
+  "average_c_before": "25.0000",
+  "average_c_after": "22.0000",
+  "duplicate_business_keys": 6,
+  "batch_averages_c": [
+    "10.0000",
+    "30.0000"
+  ],
+  "wrong_unweighted_average_c": "20.0000",
+  "correct_weighted_average_c": "25.0000"
+}

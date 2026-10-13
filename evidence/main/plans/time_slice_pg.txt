@@ -1,0 +1,42 @@
+-- time_slice: точные целые единицы, среднее округлено до 0.0001 °C.
+WITH grouped AS (
+SELECT f.city_id, (f.observed_at AT TIME ZONE 'UTC')::date AS observed_date,
+       count(*) AS observations,
+       count(*) FILTER (WHERE f.is_valid) AS valid_observations,
+       count(f.temp_centi) FILTER (WHERE f.is_valid) AS temp_count,
+       coalesce(sum(f.temp_centi) FILTER (WHERE f.is_valid), 0)::bigint AS temp_sum_centi,
+       count(f.precip_centi) FILTER (WHERE f.is_valid) AS precip_count,
+       coalesce(sum(f.precip_centi) FILTER (WHERE f.is_valid), 0)::bigint AS precip_sum_centi,
+       min(f.temp_centi) FILTER (WHERE f.is_valid) AS min_temp_centi,
+       max(f.temp_centi) FILTER (WHERE f.is_valid) AS max_temp_centi
+FROM weather_hourly AS f
+WHERE f.observed_at >= '2024-06-01' AND f.observed_at < '2024-06-04'
+GROUP BY city_id, observed_date
+)
+SELECT *,
+       CASE WHEN temp_count = 0 THEN NULL
+            ELSE sign(temp_sum_centi)::bigint *
+                 ((abs(temp_sum_centi) * 100 + temp_count / 2) / temp_count)
+       END AS avg_temp_1e4_c
+FROM grouped
+ORDER BY city_id, observed_date;
+
+Subquery Scan on grouped  (cost=1786.66..1935.84 rows=2164 width=71) (actual rows=90 loops=1)
+  Buffers: shared hit=33
+  ->  GroupAggregate  (cost=1786.66..1881.74 rows=2164 width=63) (actual rows=90 loops=1)
+        Group Key: f.city_id, (((f.observed_at AT TIME ZONE 'UTC'::text))::date)
+        Buffers: shared hit=33
+        ->  Sort  (cost=1786.66..1792.35 rows=2277 width=18) (actual rows=2160 loops=1)
+              Sort Key: f.city_id, (((f.observed_at AT TIME ZONE 'UTC'::text))::date)
+              Sort Method: quicksort  Memory: 198kB
+              Buffers: shared hit=33
+              ->  Bitmap Heap Scan on weather_hourly f  (cost=75.76..1659.68 rows=2277 width=18) (actual rows=2160 loops=1)
+                    Recheck Cond: ((observed_at >= '2024-06-01 00:00:00+00'::timestamp with time zone) AND (observed_at < '2024-06-04 00:00:00+00'::timestamp with time zone))
+                    Heap Blocks: exact=17
+                    Buffers: shared hit=33
+                    ->  Bitmap Index Scan on weather_time_city  (cost=0.00..75.19 rows=2277 width=0) (actual rows=2160 loops=1)
+                          Index Cond: ((observed_at >= '2024-06-01 00:00:00+00'::timestamp with time zone) AND (observed_at < '2024-06-04 00:00:00+00'::timestamp with time zone))
+                          Buffers: shared hit=16
+Settings: work_mem = '32MB', max_parallel_workers = '2'
+Planning Time: 0.081 ms
+Execution Time: 1.039 ms

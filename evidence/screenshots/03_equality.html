@@ -1,0 +1,35 @@
+<!doctype html><html lang='ru'><meta charset='utf-8'><title>Равенство всех строк, ключей и метрик</title><style>
+    * { box-sizing:border-box } body { margin:0; padding:32px; color:#172431;
+    background:#f0f3f6; font:16px/1.45 system-ui,sans-serif }
+    header,section,footer { background:white; border:1px solid #d6dde5;
+    border-radius:8px; padding:22px; margin-bottom:20px } h1 {font-size:28px;margin:6px 0}
+    h2 {font-size:20px;margin:0 0 14px} p {margin:8px 0} .label {color:#416380;font-size:13px}
+    .grid {display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+    .grid section {min-width:0} pre {background:#f7f9fb;border:1px solid #e0e6ec;
+    padding:15px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace}
+    table {border-collapse:collapse;width:100%;font-size:14px} th,td {border:1px solid #d9e0e7;
+    padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere} th {background:#eaf1f7}
+    .success {color:#166447;font-weight:650}.big {font-size:24px;font-weight:700}
+    code {font-family:ui-monospace,monospace} footer {font-size:12px;color:#536778}
+    </style><body><header><div class='label'>ДЗ 4 · EVIDENCE VIEWER · 13 октября 2026</div><h1>Равенство всех строк, ключей и метрик</h1><p>Сохранённый вывод выполненного эксперимента. SQL, планы и ответы взяты из файлов evidence; это не имитация интерфейса СУБД.</p></header><section><h2>Контроль переноса</h2><p class='success big'>200 232 факта · уникальные бизнес-ключи · PASS</p><table><tr><th>Набор</th><th>Строк</th><th>SHA256 всех полей в порядке ключа</th></tr><tr><td>pg</td><td>200232</td><td>199b49661513ef693747d0d7a75ff9f1f889554c716b6c2aaa225f5a79e0b460</td></tr><tr><td>ch_city</td><td>200232</td><td>199b49661513ef693747d0d7a75ff9f1f889554c716b6c2aaa225f5a79e0b460</td></tr><tr><td>ch_time</td><td>200232</td><td>199b49661513ef693747d0d7a75ff9f1f889554c716b6c2aaa225f5a79e0b460</td></tr></table><pre>Source SHA256: 199b49661513ef693747d0d7a75ff9f1f889554c716b6c2aaa225f5a79e0b460</pre></section><section><h2>Источник CSV → независимый Python → четыре SQL-варианта</h2><table><tr><th>Профиль</th><th>Групп</th><th>Полное равенство</th><th>SHA256 ответа</th></tr><tr><td>daily</td><td>8343</td><td>source = pg = ch_city = ch_time = ch_mv</td><td>d21d858e1a1401a4d1c969d4ab48cafa4936f26d2a003e080e69b6d68c1e502e</td></tr><tr><td>narrow</td><td>30</td><td>source = pg = ch_city = ch_time = ch_mv</td><td>4362689dd8b3ef02dcc2cb4a004fb52413d3edb817d94866e7b0f7a53d3b631f</td></tr><tr><td>wide</td><td>54</td><td>source = pg = ch_city = ch_time = ch_mv</td><td>281e70c0f0c756887f7325a5c64b540f3e7d37038b3d677e86dc7bf2db98a42b</td></tr><tr><td>time_slice</td><td>90</td><td>source = pg = ch_city = ch_time = ch_mv</td><td>a67d03eee8fe6618b1d3dfb5b4195ef19eeb4eec6e519f47cb98802fb8a49f01</td></tr></table><p>Сравниваются counts, sums, min/max и средняя; NULL и UTC нормализованы. Выполнено прямое сравнение полных массивов, кроме проверки SHA256.</p></section><section><h2>Проверка на каждом этапе</h2><table><tr><th>Этап</th><th>Фактов</th><th>Городо-дней</th><th>Результат</th></tr><tr><td>history</td><td>200148</td><td>8340</td><td>PASS: every field and every group</td></tr><tr><td>after_batch_1</td><td>200166</td><td>8341</td><td>PASS: every field and every group</td></tr><tr><td>after_batch_2</td><td>200232</td><td>8343</td><td>PASS: every field and every group</td></tr><tr><td>post_merge</td><td>200232</td><td>8343</td><td>PASS: every field and every group</td></tr></table></section><section><h2>Исполненный SQL полного дневного контроля ClickHouse</h2><pre>-- daily: точные целые единицы, среднее округлено до 0.0001 °C.
+WITH grouped AS (
+SELECT f.city_id, f.observed_date AS observed_date,
+       sum(f.observations) AS observations,
+       sum(f.valid_observations) AS valid_observations,
+       sum(f.temp_count) AS temp_count,
+       sum(f.temp_sum_centi) AS temp_sum_centi,
+       sum(f.precip_count) AS precip_count,
+       sum(f.precip_sum_centi) AS precip_sum_centi,
+       min(f.min_temp_centi) AS min_temp_centi,
+       max(f.max_temp_centi) AS max_temp_centi
+FROM weather.weather_daily AS f
+WHERE TRUE
+GROUP BY city_id, observed_date
+)
+SELECT *,
+       if(temp_count = 0, NULL,
+          sign(temp_sum_centi) * intDiv(abs(temp_sum_centi) * 100 + intDiv(temp_count, 2),
+                                       greatest(temp_count, 1))) AS avg_temp_1e4_c
+FROM grouped
+ORDER BY city_id, observed_date;
+</pre></section><footer>Источники: main/checks/{history,after_batch_1,after_batch_2,post_merge}.json; sql/check/daily_ch_mv.sql · Числа не извлечены из скриншотов; исходные артефакты приложены.</footer></body></html>

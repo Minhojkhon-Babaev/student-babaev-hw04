@@ -1,0 +1,1 @@
+PASS: CSV/JSON timings agree; all min/median/max validated; 5 repeats x 12 variants x 2 runs; all plans present; all Markdown links resolve; 7 valid PNGs.

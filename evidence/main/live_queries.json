@@ -1,0 +1,35 @@
+{
+  "pg": {
+    "sql": "SELECT count(*) AS observations,\n       count(DISTINCT (city_id, observed_at)) AS unique_business_keys\nFROM weather_hourly;",
+    "data": [
+      [
+        200232,
+        200232
+      ]
+    ]
+  },
+  "ch": {
+    "sql": "SELECT count() AS observations,\n       uniqExact(tuple(city_id, observed_at)) AS unique_business_keys\nFROM weather.weather_city;",
+    "data": [
+      [
+        200232,
+        200232
+      ]
+    ]
+  },
+  "mv": {
+    "sql": "SELECT city_id, observed_date,\n       sum(observations) AS observations,\n       sum(temp_count) AS temp_count,\n       sum(temp_sum_centi) AS temp_sum_centi,\n       sum(precip_sum_centi) AS precip_sum_centi,\n       min(min_temp_centi) AS min_temp_centi,\n       max(max_temp_centi) AS max_temp_centi\nFROM weather.weather_daily\nWHERE city_id = 'moscow' AND observed_date = '2024-10-05'\nGROUP BY city_id, observed_date;",
+    "data": [
+      [
+        "moscow",
+        "2024-10-05",
+        24,
+        24,
+        60000,
+        1500,
+        1000,
+        3000
+      ]
+    ]
+  }
+}

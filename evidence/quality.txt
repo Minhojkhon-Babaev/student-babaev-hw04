@@ -1,0 +1,22 @@
+ Container hw04-chweather-clickhouse-1 Running 
+ Container hw04-chweather-postgres-1 Running 
+ Container hw04-chweather-postgres-1 Waiting 
+ Container hw04-chweather-clickhouse-1 Waiting 
+ Container hw04-chweather-clickhouse-1 Healthy 
+ Container hw04-chweather-postgres-1 Healthy 
+ Container hw04-chweather-runner-run-5fa806078c26 Creating 
+ Container hw04-chweather-runner-run-5fa806078c26 Created 
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+reformatted /workspace/scripts/collect_live.py
+reformatted /workspace/scripts/mpp_analysis.py
+reformatted /workspace/scripts/compare_runs.py
+reformatted /workspace/scripts/render_evidence.py
+
+All done! ✨ 🍰 ✨
+4 files reformatted, 5 files left unchanged.
+All checks passed!
+All done! ✨ 🍰 ✨
+9 files would be left unchanged.

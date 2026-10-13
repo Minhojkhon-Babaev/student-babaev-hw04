@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "clean_project": "hw04-clean-20261013",
+  "main_project": "hw04-chweather",
+  "new_named_volumes_proof": "clean/startup.txt",
+  "same_generator_manifest": true,
+  "same_dimension_all_fields": true,
+  "stages": [
+    {
+      "stage": "history",
+      "same_source_and_all_result_values": true
+    },
+    {
+      "stage": "after_batch_1",
+      "same_source_and_all_result_values": true
+    },
+    {
+      "stage": "after_batch_2",
+      "same_source_and_all_result_values": true
+    },
+    {
+      "stage": "post_merge",
+      "same_source_and_all_result_values": true
+    }
+  ],
+  "timed_selects_per_run": 60,
+  "versions_and_limits": "main/environment.json and clean/environment.json",
+  "scope": "Two fresh Docker data projects on the same macOS ARM64 host; build cache reused"
+}

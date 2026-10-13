@@ -1,73 +1,142 @@
-# ДЗ 2. Погода Open-Meteo → DWH
+# ДЗ 4 — аналитическая витрина погоды в ClickHouse
 
-Потребитель — аналитик климата. Ему нужна таблица «город × день»: средняя, мин, макс температура и суточная амплитуда.
+Самодостаточный эксперимент на синтетических почасовых наблюдениях: PostgreSQL,
+две сортировки MergeTree, инкрементальная витрина `город × сутки UTC`.
+Продолжает погодную предметную область ДЗ 1–3. Внешние погодные API не нужны.
 
-Вопрос: в какие дни 1–3 июня 2024 у Москвы, Сочи и Якутска амплитуда день–ночь была наибольшей, и чем приморский Сочи отличается от континентального Якутска. Считается `max(temp) − min(temp)` по часам UTC.
+Результат и ограничения: [report.md](report.md). Полный основной прогон и
+повтор в новом Compose-проекте сохранены в `evidence/main/` и `evidence/clean/`.
 
-Одна строка факта — один час UTC в одном городе.
+## Требования и версии
 
-## Источник и срез
+- Docker Desktop на macOS / Windows, режим **Linux containers**, либо Docker
+  Engine + Compose на Linux. Фактическая проверка: macOS 26.4, Apple ARM64,
+  Colima, Docker Engine 29.5.2, Compose 5.5.1, VM 6 CPU / 12 ГиБ.
+- Для двух СУБД и загрузчика выделить Docker не менее 6 CPU / 8 ГиБ RAM;
+  рекомендуется 12 ГиБ. Если ресурсы меньше, изменённые лимиты записать в отчёт.
+- PostgreSQL **16.4**, ClickHouse **24.8.14.39**, Python **3.12.14**,
+  `psycopg2-binary==2.9.10`. Образы закреплены digest в Compose / Dockerfile;
+  проверено наличие Linux ARM64 и AMD64 в manifest index.
+- Интернет нужен для первого получения образов и Python wheel. Docker build
+  cache допускается: чистый опыт означает новые базы и volumes, а не пересборку
+  всех базовых образов без кэша.
+- Python на хосте не требуется: код выполняется сервисом `runner`.
 
-[Open-Meteo Historical Weather](https://open-meteo.com/en/docs/historical-weather-api), ERA5, CC BY 4.0. Время UTC. Температура °C, осадки мм.
+## Первый запуск
 
-Контрольный срез: Москва, Сочи, Якутск; `2024-06-01`…`2024-06-03`; 216 часов. Лежит в `data/control/`. Перескачать: `python3 scripts/fetch_source.py`.
+Распакуйте проект в любую папку и перейдите в неё. Ни один исполняемый файл не
+использует путь автора. В macOS/Linux это `cd /ваш/путь/student-babaev-hw04`,
+в Windows PowerShell — `Set-Location 'C:\ваш\путь\student-babaev-hw04'`.
+Все следующие команды одинаковы для этих систем:
 
-## Схема
-
-```
-raw.weather_hourly ──► ods.stg_weather_hourly ──► dds.fact_weather_hourly ──► marts.weather_daily_candidate
-raw.city_reference ──► ods.stg_city           ──► dds.dim_city ─────────────┘         │
-                                              ──► dds.dim_date                       ▼
-                                                                         published.weather_daily
-```
-
-- факт `fact_weather_hourly`: ключ `(city_id, observed_at)`, связь N:1 с `dim_city` (по версии на дату) и `dim_date`
-- измерения: город (SCD2), календарный день
-- витрина: одна строка = город × день
-
-История атрибутов города нужна для случая «сменился округ»: старые дни остаются на старой версии. В Open-Meteo истории округа нет — для случая 3 кладётся явно помеченный синтетический `city.csv` (`is_synthetic=true`). Это не промышленный SCD2.
-
-Размерная модель подходит, потому что отчёт режет факт по городу и дате. Для произвольных ad-hoc срезов по сырым часам хватило бы одной широкой таблицы.
-
-## Запуск
-
-Версии: Postgres 16, Airflow 2.9.3, dbt-core 1.8.2, dbt-postgres 1.8.2. Docker, порты `127.0.0.1:5433` и `127.0.0.1:8080`. UI Airflow: `student` / `student`.
-
-```bash
-cd student-babaev-hw02
-docker compose build
-docker compose up -d
-# подождать, пока http://127.0.0.1:8080 откроется
-
-docker compose exec -T airflow bash -lc \
-  'export PATH=/home/airflow/.local/bin:$PATH; airflow dags trigger weather_elt --conf "{\"slice\": \"control\"}"'
+```sh
+docker compose build runner
+docker compose up -d --wait postgres clickhouse
+docker compose --profile tools run --rm runner python scripts/run.py --evidence-dir evidence/my-run
+docker compose --profile tools run --rm runner python scripts/verify.py --evidence-dir evidence/my-run
+docker compose ps
 ```
 
-Или `bash scripts/trigger_dag.sh control`.
+`run.py` проверяет отсутствие таблиц до загрузки. Он не очищает существующие
+базы. Повторный запуск загрузчика в том же проекте завершится объяснимой ошибкой.
+`verify.py` повторяет контроль уже загруженных баз без изменения данных.
+`evidence/my-run` сохраняет новый результат отдельно от сданного основного опыта.
 
-Срез задаётся параметром `slice`, не датой запуска DAG. При ежедневном расписании обрабатывался бы календарный день события, не `logical_date`.
+Алгоритм `run.py`: создать схему → сгенерировать CSV → проверить уникальность
+всего источника → загрузить историю в обе СУБД и обе MergeTree → создать MV →
+однократно backfill `batch_id=0` → контроль → вставить пачку 1 → контроль →
+вставить пачку 2 → контроль → `VACUUM (ANALYZE)` → прогрев и 5 повторов каждого
+запроса → изолированный опыт дублей → возобновить merges.
 
-Параллельные запуски выключены: `max_active_runs=1`.
+Во время вставок новых пачек и замеров merges трёх исследуемых таблиц временно
+остановлены. Чтение витрины всегда группирует её ключ и объединяет состояния.
+В `finally` merges возобновляются; данные не удаляются.
 
-Четыре случая (после зелёного `control`):
+## Ещё один чистый Docker-проект
 
-```bash
-bash scripts/trigger_dag.sh control                      # 1. повтор
-bash scripts/trigger_dag.sh cases/case2_new_day          # 2. +день Москвы
-bash scripts/trigger_dag.sh cases/case3_city_history     # 3. SCD2 округа
-bash scripts/trigger_dag.sh cases/case4_bad_temperature  # 4. 999 °C, публикация стоп
+Выберите ранее не использовавшееся имя проекта. Оно определяет отдельные сеть,
+контейнеры и named volumes, поэтому старые данные сохраняются:
+
+```sh
+docker compose -p hw04-fresh-your-id build runner
+docker compose -p hw04-fresh-your-id up -d --wait postgres clickhouse
+docker compose -p hw04-fresh-your-id --profile tools run --rm runner python scripts/run.py --evidence-dir evidence/my-clean-run
+docker compose -p hw04-fresh-your-id --profile tools run --rm runner python scripts/verify.py --evidence-dir evidence/my-clean-run
 ```
 
-Витрина: `docker compose exec -T postgres psql -U warehouse -d warehouse -f /dev/stdin < queries.sql`
+Не запускайте опыты параллельно: они разделяют ресурсы Docker, а генератор
+пишет один каталог `data/generated`. Сданный повтор использовал имя
+`hw04-clean-20261013`; подтверждения создания новых volumes, полный вывод и
+проверки находятся в `evidence/clean/`.
 
-Независимый контроль: `python3 scripts/independent_check.py data/control/weather.csv`
+## Параметры источника и локальные пути
 
-## Если DAG красный
+По умолчанию: `--seed 20261013 --days 278 --cities 30 --repeats 5`.
+Начало ряда фиксировано: `2024-01-01 00:00:00 UTC`. Для другого размера
+передайте эти параметры `scripts/run.py` в новом Docker-проекте. Ограничения
+`days>=185`, `3<=cities<=100` сохраняют смысл фиксированных SQL-профилей;
+сданные численные результаты относятся только к параметрам по умолчанию.
 
-`cannot drop table raw.weather_hourly because other objects depend on it` — старая версия загрузчика. В текущем коде raw чистится `TRUNCATE`.
+- `.:/workspace` — относительный bind mount всего проекта для загрузчика.
+- `./docker/clickhouse.xml:...:ro` — относительный конфиг ClickHouse.
+- `pg_data`, `ch_data` — named volumes Docker, без host-specific путей.
+- `/workspace/data/generated` — воспроизводимые временные CSV; не входят в сдачу.
+- `data/examples/batch_1.csv` и `batch_2.csv` — маленькие реальные новые пачки
+  основного опыта, входят в сдачу (18 и 66 строк).
+- На Docker Desktop разрешите доступ к папке распакованного проекта; на Windows
+  предпочтителен локальный каталог с разрешённым File Sharing или каталог WSL2.
+- Межконтейнерные имена — `postgres`, `clickhouse`. Порты на хост не опубликованы,
+  поэтому проект не конфликтует с установленными СУБД.
+- `local_homework_only` — заведомо учебный пароль этой изолированной сети, не
+  пароль какой-либо реальной системы.
 
-`dbt test` падает на `assert_temperature_physical` — в срезе есть температура вне −90…60 °C. Публикация не выполняется, `published.weather_daily` не меняется.
+## SQL и новая вставка
 
-## Среда evidence
+Готовые запросы лежат в `sql/queries/`, полный дневной контроль — в `sql/check/`.
+DDL: `sql/postgres.sql`, `sql/clickhouse.sql`, `sql/mv.sql`, `sql/backfill.sql`.
+Основной загрузчик выполняет `COPY` в PG и `INSERT ... FORMAT TSVWithNames` в
+каждую MergeTree; MV срабатывает на вставку в `weather_city` автоматически.
+Пачки уже вставлены основным прогоном — не вставляйте их вручную второй раз.
 
-macOS, Docker 29.5.2 в colima, 6 CPU / 12 ГиБ. Запуски 2026-09-29.
+Открыть SQL и проверить витрину через CLI:
+
+```sh
+docker compose exec -T postgres psql -U student -d weather -c "SELECT count(*) FROM weather_hourly;"
+docker compose exec -T clickhouse clickhouse-client --user student --password local_homework_only --query "SELECT count() FROM weather.weather_city;"
+docker compose exec -T clickhouse clickhouse-client --user student --password local_homework_only --query "SELECT city_id, observed_date, sum(observations), sum(temp_sum_centi), sum(temp_count) FROM weather.weather_daily WHERE city_id='moscow' AND observed_date='2024-10-05' GROUP BY city_id, observed_date;"
+```
+
+Последний ответ: `moscow / 2024-10-05 / 24 / 60000 / 24`, то есть средняя **25 °C**.
+Доказательства перехода 6 → 24 наблюдения сохранены в
+`evidence/main/checks/incremental.json`; первые 12 часов Москвы 4 октября
+доставляются поздно и обновляют существующий день.
+
+`sql/new_batch_example.sql` — дополнительная иллюстрация вставки двух новых
+часов **только в ClickHouse** с ожидаемым результатом MV. Это отдельный ручной
+пример после опыта; он меняет сравниваемый набор и не входит в основной прогон.
+Для контрольного эксперимента используются именно обе CSV-пачки через `run.py`.
+
+## Остановка без удаления данных
+
+```sh
+docker compose stop
+# либо для другого имени:
+docker compose -p hw04-fresh-your-id stop
+```
+
+Вернуть работающие базы: `docker compose up -d --wait postgres clickhouse`.
+После возвращения запускать `verify.py`, а не повторную загрузку. Named volumes
+сохраняются. В работе и в инструкции не используется `down -v`.
+
+## Состав сдачи
+
+`report.md`, Compose / Dockerfile / конфиг, `scripts/`, `sql/`, маленькие
+`data/examples/`, исходные замеры и проверки в `evidence/`, браузерные скриншоты
+их фактического вывода в `evidence/screenshots/`. Представление снимков можно
+пересоздать скриптом `scripts/render_evidence.py`; HTML исходники остаются рядом.
+Снимки дополняют JSON/CSV/SQL и не заменяют их.
+
+Большие CSV истории генерируются заново; Docker volumes, `.git`, локальные env
+и Python cache не включаются в архив. После частичной ошибки между PG и CH
+нет распределённой транзакции: не повторяйте загрузку вслепую; используйте новое
+имя Compose-проекта и отдельный каталог evidence, сохранив предыдущий опыт.

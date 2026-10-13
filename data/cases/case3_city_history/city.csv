@@ -1,5 +1,0 @@
-city_id,city_name,country_code,federal_district,utc_offset_hours,valid_from,valid_to,is_synthetic
-moscow,Москва,RU,Центральный,3,2024-01-01,2024-06-02,false
-moscow,Москва,RU,ТЕСТОВЫЙ_ОКРУГ,3,2024-06-02,9999-12-31,true
-sochi,Сочи,RU,Южный,3,2024-01-01,9999-12-31,false
-yakutsk,Якутск,RU,Дальневосточный,9,2024-01-01,9999-12-31,false

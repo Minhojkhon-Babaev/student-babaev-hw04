@@ -1,0 +1,11 @@
+{
+  "before": {
+    "ch_merges": 0,
+    "pg_active_autovacuum": 0
+  },
+  "after": {
+    "ch_merges": 0,
+    "pg_active_autovacuum": 0
+  },
+  "merge_policy": "STOP MERGES of three experimental tables until all checks and timings complete"
+}

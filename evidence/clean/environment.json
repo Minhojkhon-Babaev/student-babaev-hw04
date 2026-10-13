@@ -1,0 +1,125 @@
+{
+  "captured_at_utc": "2026-10-13T14:34:16.703888+00:00",
+  "platform": "Linux-6.8.0-117-generic-aarch64-with-glibc2.41",
+  "architecture": "aarch64",
+  "python": "3.12.14",
+  "postgres_version": "PostgreSQL 16.4 (Debian 16.4-1.pgdg120+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit",
+  "clickhouse_version": "24.8.14.39",
+  "pg_settings": [
+    [
+      "autovacuum",
+      "on",
+      null
+    ],
+    [
+      "effective_cache_size",
+      "524288",
+      "8kB"
+    ],
+    [
+      "enable_bitmapscan",
+      "on",
+      null
+    ],
+    [
+      "enable_indexscan",
+      "on",
+      null
+    ],
+    [
+      "enable_seqscan",
+      "on",
+      null
+    ],
+    [
+      "jit",
+      "on",
+      null
+    ],
+    [
+      "max_parallel_workers",
+      "2",
+      null
+    ],
+    [
+      "max_parallel_workers_per_gather",
+      "2",
+      null
+    ],
+    [
+      "max_worker_processes",
+      "8",
+      null
+    ],
+    [
+      "random_page_cost",
+      "4",
+      null
+    ],
+    [
+      "server_version",
+      "16.4 (Debian 16.4-1.pgdg120+2)",
+      null
+    ],
+    [
+      "shared_buffers",
+      "32768",
+      "8kB"
+    ],
+    [
+      "TimeZone",
+      "UTC",
+      null
+    ],
+    [
+      "track_io_timing",
+      "on",
+      null
+    ],
+    [
+      "work_mem",
+      "32768",
+      "kB"
+    ]
+  ],
+  "clickhouse_query_settings": {
+    "max_threads": 2,
+    "max_memory_usage": 1000000000,
+    "use_query_cache": 0,
+    "log_queries": 1,
+    "output_format_json_quote_64bit_integers": 0,
+    "session_timezone": "UTC",
+    "join_use_nulls": 1
+  },
+  "pg_indexes": [
+    [
+      "weather_city_time_cover",
+      "CREATE INDEX weather_city_time_cover ON public.weather_hourly USING btree (city_id, observed_at) INCLUDE (temp_centi, precip_centi, is_valid)"
+    ],
+    [
+      "weather_hourly_pkey",
+      "CREATE UNIQUE INDEX weather_hourly_pkey ON public.weather_hourly USING btree (city_id, observed_at)"
+    ],
+    [
+      "weather_time_city",
+      "CREATE INDEX weather_time_city ON public.weather_hourly USING btree (observed_at, city_id)"
+    ]
+  ],
+  "pg_last_analyze": [
+    [
+      "2026-10-13 14:34:16.697336+00:00",
+      null,
+      null
+    ]
+  ],
+  "resource_limits": {
+    "postgres_cpus": 2,
+    "clickhouse_cpus": 2,
+    "memory_per_database_bytes": 2147483648,
+    "runner_cpus": 1,
+    "runner_memory_bytes": 1073741824
+  },
+  "cache_policy": "Warm OS/DB caches, one explicit warmup per variant; CH result cache disabled; no cache eviction",
+  "pg_explain_policy": "Separate execution after each wall timing; ANALYZE BUFFERS SETTINGS TIMING OFF",
+  "ch_server_timer_policy": "query_log query_duration_ms (integer ms), JSON statistics.elapsed also retained"
+}

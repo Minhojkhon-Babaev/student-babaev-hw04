@@ -1,0 +1,332 @@
+[
+  {
+    "profile": "narrow",
+    "variant": "pg",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 0.565651,
+      "median": 0.593656,
+      "max": 0.662502
+    },
+    "server_ms": {
+      "min": 0.159,
+      "median": 0.186,
+      "max": 0.205
+    },
+    "read_rows": {
+      "min": 720,
+      "median": 720,
+      "max": 720
+    }
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_city",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.941008,
+      "median": 4.160592,
+      "max": 5.173203
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 3,
+      "max": 4
+    },
+    "read_rows": {
+      "min": 8192,
+      "median": 8192,
+      "max": 8192
+    },
+    "read_bytes": {
+      "min": 98304,
+      "median": 98304,
+      "max": 98304
+    },
+    "statistics_elapsed_ms": {
+      "min": 2.985658,
+      "median": 3.259627,
+      "max": 4.085494000000001
+    }
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_time",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.818651,
+      "median": 4.071617,
+      "max": 4.175803
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 3,
+      "max": 3
+    },
+    "read_rows": {
+      "min": 24576,
+      "median": 24576,
+      "max": 24576
+    },
+    "read_bytes": {
+      "min": 294912,
+      "median": 294912,
+      "max": 294912
+    },
+    "statistics_elapsed_ms": {
+      "min": 2.940066,
+      "median": 3.128352,
+      "max": 3.192823
+    }
+  },
+  {
+    "profile": "narrow",
+    "variant": "ch_mv",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.515384,
+      "median": 3.816401,
+      "max": 4.561669
+    },
+    "server_ms": {
+      "min": 2,
+      "median": 2,
+      "max": 3
+    },
+    "read_rows": {
+      "min": 8340,
+      "median": 8340,
+      "max": 8340
+    },
+    "read_bytes": {
+      "min": 475380,
+      "median": 475380,
+      "max": 475380
+    },
+    "statistics_elapsed_ms": {
+      "min": 2.646593,
+      "median": 2.799455,
+      "max": 3.401029
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "pg",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 65.859501,
+      "median": 70.137948,
+      "max": 70.27282
+    },
+    "server_ms": {
+      "min": 75.399,
+      "median": 75.82,
+      "max": 76.109
+    },
+    "read_rows": {
+      "min": 200232,
+      "median": 200232,
+      "max": 200232
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_city",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 19.566725,
+      "median": 19.719296,
+      "max": 20.769286
+    },
+    "server_ms": {
+      "min": 18,
+      "median": 18,
+      "max": 19
+    },
+    "read_rows": {
+      "min": 200244,
+      "median": 200244,
+      "max": 200244
+    },
+    "read_bytes": {
+      "min": 2402520,
+      "median": 2402520,
+      "max": 2402520
+    },
+    "statistics_elapsed_ms": {
+      "min": 18.127156,
+      "median": 18.328862,
+      "max": 19.191524
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_time",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 19.406653,
+      "median": 19.786056,
+      "max": 20.336161
+    },
+    "server_ms": {
+      "min": 18,
+      "median": 18,
+      "max": 19
+    },
+    "read_rows": {
+      "min": 200178,
+      "median": 200178,
+      "max": 200178
+    },
+    "read_bytes": {
+      "min": 2402256,
+      "median": 2402256,
+      "max": 2402256
+    },
+    "statistics_elapsed_ms": {
+      "min": 18.197544999999998,
+      "median": 18.47747,
+      "max": 18.980067
+    }
+  },
+  {
+    "profile": "wide",
+    "variant": "ch_mv",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 4.988085,
+      "median": 5.500891,
+      "max": 6.039162
+    },
+    "server_ms": {
+      "min": 4,
+      "median": 4,
+      "max": 4
+    },
+    "read_rows": {
+      "min": 8373,
+      "median": 8373,
+      "max": 8373
+    },
+    "read_bytes": {
+      "min": 475866,
+      "median": 475866,
+      "max": 475866
+    },
+    "statistics_elapsed_ms": {
+      "min": 3.815901,
+      "median": 4.259152,
+      "max": 4.757707
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "pg",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 1.674823,
+      "median": 1.811557,
+      "max": 1.850397
+    },
+    "server_ms": {
+      "min": 1.111,
+      "median": 1.192,
+      "max": 1.229
+    },
+    "read_rows": {
+      "min": 2160,
+      "median": 2160,
+      "max": 2160
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_city",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 5.603162,
+      "median": 5.878632,
+      "max": 6.230824
+    },
+    "server_ms": {
+      "min": 4,
+      "median": 4,
+      "max": 5
+    },
+    "read_rows": {
+      "min": 200214,
+      "median": 200214,
+      "max": 200214
+    },
+    "read_bytes": {
+      "min": 2402040,
+      "median": 2402040,
+      "max": 2402040
+    },
+    "statistics_elapsed_ms": {
+      "min": 4.4632760000000005,
+      "median": 4.743163,
+      "max": 5.067643
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_time",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 3.970514,
+      "median": 4.383386,
+      "max": 5.04743
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 3,
+      "max": 4
+    },
+    "read_rows": {
+      "min": 8192,
+      "median": 8192,
+      "max": 8192
+    },
+    "read_bytes": {
+      "min": 98304,
+      "median": 98304,
+      "max": 98304
+    },
+    "statistics_elapsed_ms": {
+      "min": 3.052588,
+      "median": 3.313221,
+      "max": 3.881789
+    }
+  },
+  {
+    "profile": "time_slice",
+    "variant": "ch_mv",
+    "repeats": 5,
+    "wall_ms": {
+      "min": 4.056572,
+      "median": 4.186222,
+      "max": 4.698946
+    },
+    "server_ms": {
+      "min": 3,
+      "median": 3,
+      "max": 3
+    },
+    "read_rows": {
+      "min": 8343,
+      "median": 8343,
+      "max": 8343
+    },
+    "read_bytes": {
+      "min": 475386,
+      "median": 475386,
+      "max": 475386
+    },
+    "statistics_elapsed_ms": {
+      "min": 2.989867,
+      "median": 3.0275,
+      "max": 3.433745
+    }
+  }
+]

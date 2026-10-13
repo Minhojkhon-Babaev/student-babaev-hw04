@@ -1,63 +1,65 @@
-name: hse-dwh-hw02
-
+name: hw04-chweather
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.4-bookworm@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
     environment:
-      POSTGRES_USER: warehouse
-      POSTGRES_PASSWORD: warehouse
-      POSTGRES_DB: warehouse
-    ports:
-      - "127.0.0.1:5433:5432"
+      POSTGRES_DB: weather
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: local_homework_only
+      TZ: UTC
+    command: [postgres, -c, timezone=UTC, -c, shared_buffers=256MB, -c, work_mem=32MB, -c, max_parallel_workers_per_gather=2, -c, max_parallel_workers=2, -c, track_io_timing=on]
+    cpus: 2
+    mem_limit: 2g
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U warehouse -d warehouse"]
-      interval: 5s
+      test: [CMD-SHELL, pg_isready -U student -d weather]
+      interval: 3s
       timeout: 3s
-      retries: 20
-    restart: "no"
-
-  airflow:
-    build: ./docker/airflow
-    depends_on:
-      postgres:
-        condition: service_healthy
+      retries: 40
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8@sha256:1ffa82edee000a42c09313bd9f1293d94c570aee74babc1b3ca9983a35fa597b
     environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://warehouse:warehouse@postgres:5432/airflow
-      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
-      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "1"
-      AIRFLOW__CORE__PARALLELISM: "4"
-      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
-      AIRFLOW__CORE__DAGS_FOLDER: /opt/project/airflow/dags
-      AIRFLOW_HOME: /opt/airflow
-      WAREHOUSE_HOST: postgres
-      WAREHOUSE_PORT: "5432"
-      WAREHOUSE_DB: warehouse
-      WAREHOUSE_USER: warehouse
-      WAREHOUSE_PASSWORD: warehouse
-      DBT_PROFILES_DIR: /opt/project/dbt
-      PROJECT_DIR: /opt/project
-      _AIRFLOW_WWW_USER_USERNAME: student
-      _AIRFLOW_WWW_USER_PASSWORD: student
-    ports:
-      - "127.0.0.1:8080:8080"
+      CLICKHOUSE_DB: weather
+      CLICKHOUSE_USER: student
+      CLICKHOUSE_PASSWORD: local_homework_only
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      TZ: UTC
+    cpus: 2
+    mem_limit: 2g
+    ulimits:
+      nofile: {soft: 262144, hard: 262144}
     volumes:
-      - ./:/opt/project
-    user: "0:0"
-    restart: "no"
-    command: >
-      bash -lc "
-        export PATH=/home/airflow/.local/bin:/usr/local/bin:$$PATH
-        airflow db init || true
-        airflow db migrate || true
-        airflow users create --username student --password student --firstname Student --lastname Babaev --role Admin --email student@local || true
-        airflow scheduler &
-        exec airflow webserver --port 8080
-      "
-
+      - ch_data:/var/lib/clickhouse
+      - ./docker/clickhouse.xml:/etc/clickhouse-server/config.d/homework.xml:ro
+    healthcheck:
+      test: [CMD-SHELL, "clickhouse-client --user student --password local_homework_only --query 'SELECT 1'"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+  runner:
+    profiles: [tools]
+    build:
+      context: .
+      dockerfile: docker/runner.Dockerfile
+    cpus: 1
+    mem_limit: 1g
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PGHOST: postgres
+      PGDATABASE: weather
+      PGUSER: student
+      PGPASSWORD: local_homework_only
+      CH_URL: http://clickhouse:8123
+      CH_USER: student
+      CH_PASSWORD: local_homework_only
+      PYTHONDONTWRITEBYTECODE: 1
+    depends_on:
+      postgres: {condition: service_healthy}
+      clickhouse: {condition: service_healthy}
+    command: [python, scripts/run.py]
 volumes:
-  postgres_data:
+  pg_data:
+  ch_data:

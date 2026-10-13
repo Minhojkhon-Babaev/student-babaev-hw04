@@ -1,0 +1,28 @@
+<!doctype html><html lang='ru'><meta charset='utf-8'><title>Новые вставки автоматически обновляют MV</title><style>
+    * { box-sizing:border-box } body { margin:0; padding:32px; color:#172431;
+    background:#f0f3f6; font:16px/1.45 system-ui,sans-serif }
+    header,section,footer { background:white; border:1px solid #d6dde5;
+    border-radius:8px; padding:22px; margin-bottom:20px } h1 {font-size:28px;margin:6px 0}
+    h2 {font-size:20px;margin:0 0 14px} p {margin:8px 0} .label {color:#416380;font-size:13px}
+    .grid {display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+    .grid section {min-width:0} pre {background:#f7f9fb;border:1px solid #e0e6ec;
+    padding:15px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace}
+    table {border-collapse:collapse;width:100%;font-size:14px} th,td {border:1px solid #d9e0e7;
+    padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere} th {background:#eaf1f7}
+    .success {color:#166447;font-weight:650}.big {font-size:24px;font-weight:700}
+    code {font-family:ui-monospace,monospace} footer {font-size:12px;color:#536778}
+    </style><body><header><div class='label'>ДЗ 4 · EVIDENCE VIEWER · 13 октября 2026</div><h1>Новые вставки автоматически обновляют MV</h1><p>Сохранённый вывод выполненного эксперимента. SQL, планы и ответы взяты из файлов evidence; это не имитация интерфейса СУБД.</p></header><section><h2>Пачки действительно вставлены загрузчиком</h2><pre>COPY weather_hourly FROM STDIN WITH (FORMAT CSV, HEADER TRUE, NULL &#x27;&#x27;);
+INSERT INTO weather.weather_city FORMAT TSVWithNames
+INSERT INTO weather.weather_time FORMAT TSVWithNames
+
+batch_1.csv: 18 строк (12 поздних + 6 часов нового дня)
+batch_2.csv: 66 строк (18 часов Москвы + 48 часов Сочи/Якутска)</pre></section><section><h2>Сохранённые ответы после каждой вставки</h2><table><tr><th>Этап</th><th>Город</th><th>День UTC</th><th>temp_count</th><th>temp_sum_centi</th><th>Средняя, °C</th></tr><tr><td>После пачки 1 (6 новых часов)</td><td>moscow</td><td>2024-10-05</td><td>6</td><td>6000</td><td>10.0000</td></tr><tr><td>После пачки 2 (+18 часов)</td><td>moscow</td><td>2024-10-05</td><td>24</td><td>60000</td><td>25.0000</td></tr></table><p>Невзвешенное (10+30)/2 = 20 °C ошибочно; (6×10+18×30)/24 = 25 °C.</p></section><section><h2>Слияние нескольких частей без ожидания merges</h2><table><tr><th>Физических строк до merges</th><th>Логических групп</th><th>Равенство сырому источнику</th></tr><tr><td>8345</td><td>8343</td><td>PASS</td></tr></table></section><section><h2>Короткий SELECT выполнен после опыта</h2><pre>SELECT city_id, observed_date,
+       sum(observations) AS observations,
+       sum(temp_count) AS temp_count,
+       sum(temp_sum_centi) AS temp_sum_centi,
+       sum(precip_sum_centi) AS precip_sum_centi,
+       min(min_temp_centi) AS min_temp_centi,
+       max(max_temp_centi) AS max_temp_centi
+FROM weather.weather_daily
+WHERE city_id = &#x27;moscow&#x27; AND observed_date = &#x27;2024-10-05&#x27;
+GROUP BY city_id, observed_date;</pre><table><tr><th>city_id</th><th>observed_date</th><th>observations</th><th>temp_count</th><th>temp_sum_centi</th><th>precip_sum_centi</th><th>min</th><th>max</th></tr><tr><td>moscow</td><td>2024-10-05</td><td>24</td><td>24</td><td>60000</td><td>1500</td><td>1000</td><td>3000</td></tr></table></section><footer>Источники: main/loads.json; main/checks/incremental.json; main/checks/after_batch_{1,2}.json; main/live_queries.json · Числа не извлечены из скриншотов; исходные артефакты приложены.</footer></body></html>
