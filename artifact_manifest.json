@@ -35,8 +35,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 11032,
-      "sha256": "be83380c4b6996647e68de5575666b59bee43e2547900eae6fbb2e9a79633390"
+      "bytes": 6069,
+      "sha256": "ddfe87d9dedf23aaec8d2afe56e6922b00e924208df22cf7429b9d33f95fae37"
     },
     {
       "path": "data/examples/batch_1.csv",
